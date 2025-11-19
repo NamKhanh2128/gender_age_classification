@@ -1,0 +1,6 @@
+data/raw/
+src/__pycache__
+outputs/X.npy
+outputs/y_age.npy
+outputs/y_gender.npy
+outputs/dataset_compressed.npz
