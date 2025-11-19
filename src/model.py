@@ -4,33 +4,51 @@ import numpy as np
 from tensorflow.keras import layers, Model # type: ignore
 
 def build_model(input_shape=(227, 227, 3)):
+    # Input layer
     inputs = layers.Input(shape=input_shape)
-    x = layers.Conv2D(96, (7, 7), strides=2, padding='same', activation='relu')(inputs)
+    
+    # Conv1
+    x = layers.Conv2D(96, (7, 7), strides=2, padding='same')(inputs)
+    x = layers.Activation('relu')(x)
+    x = layers.MaxPooling2D(pool_size=(3, 3), strides=2)(x)
+    x = layers.BatchNormalization() (x)  
+
+    # Conv2
+    x = layers.Conv2D(256, (5, 5), strides=2, padding='same')(x)
+    x = layers.Activation('relu')(x)
     x = layers.MaxPooling2D(pool_size=(3, 3), strides=2)(x)
     x = layers.BatchNormalization()(x)
 
-    x = layers.Conv2D(256, (5, 5), strides=2, padding='same', activation='relu')(x)
-    x = layers.MaxPooling2D(pool_size=(3, 3), strides=2)(x)
-    x = layers.BatchNormalization()(x)
-
-    x = layers.Conv2D(384, (3, 3), strides=2, padding='same', activation='relu')(x)
+    # Conv3
+    x = layers.Conv2D(384, (3, 3), strides=2, padding='same')(x)
+    x = layers.Activation('relu')(x)
     x = layers.MaxPooling2D(pool_size=(3, 3), strides=2)(x)
 
+    # Flatten & Shared FC layers
     x = layers.Flatten()(x)
-    x = layers.Dense(512, activation='relu')(x)
+    x = layers.Dense(512)(x)
+    x = layers.Activation('relu')(x)
     x = layers.Dropout(0.5)(x)
-    x = layers.Dense(512, activation='relu')(x)
+
+    x = layers.Dense(512)(x)
+    x = layers.Activation('relu')(x)
     shared_features = layers.Dropout(0.5)(x)
 
+    # Gender prediction branch (2 classes: male/female)
     gender_branch = layers.Dense(256, activation='relu')(shared_features)
     gender_branch = layers.Dropout(0.3)(gender_branch)
     gender_output = layers.Dense(2, activation='softmax', name='gender_output')(gender_branch)
 
-    age_branch = layers.Dense(256, activation='relu')(shared_features)
+    # Age prediction branch (8 classes: age groups)
+    age_branch = layers.Dense(512, activation='relu')(shared_features)
+    age_branch = layers.Dropout(0.3)(age_branch)
+    age_branch = layers.Dense(256, activation='relu')(age_branch)
     age_branch = layers.Dropout(0.3)(age_branch)
     age_output = layers.Dense(8, activation='softmax', name='age_output')(age_branch)
 
+    # Create model with multiple outputs
     model = Model(inputs=inputs, outputs=[gender_output, age_output])
+
     return model
 
 def compile_model(model, learning_rate=0.001):
