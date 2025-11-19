@@ -1,0 +1,13 @@
+Đây là thư mục chứa bộ dữ liệu Adience (bộ dữ liệu chính dùng để huấn luyện cho bài toán này)
+Tuy nhiên, vì kích thước của bộ dữ liệu quá lớn, nên chúng tôi không thể đẩy lên github.
+Vui lòng tải bộ dữ liệu tại đường link: https://www.kaggle.com/datasets/alfredhhw/adiencegender
+Sau khi tải, cấu trúc thư mục data sẽ như sau:
+data
+|__raw
+|__|__aligned/ (Chứa toàn bộ ảnh)
+|__|__fold_0_data.txt
+|__|__fold_1_data.txt
+|__|__fold_2.data.txt
+|__|__fold_3_data.txt
+|__|__fold_4_data.txt
+|__introduction.txt (this file)
