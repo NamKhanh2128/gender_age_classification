@@ -4,12 +4,13 @@ from PIL import Image, ImageTk
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model #type: ignore
+from src.utils import plot_probabilities
 
 # ---- Cấu hình lớp ----
 GENDER_CLASSES = ['Nữ', 'Nam']
 AGE_CLASSES = ['(0, 2)', '(4, 6)', '(8, 13)', '(15, 20)', '(25, 32)', '(38, 43)', '(48, 53)', '(60, 100)']
 
-# ---- Load mô hình ----g
+# ---- Load mô hình ----
 MODEL_PATH = "outputs/trained_model_ver2.h5"  
 model = load_model(MODEL_PATH)
 
@@ -58,17 +59,22 @@ def choose_image():
             f"Nhóm tuổi: {age_label} ({age_pred[0][np.argmax(age_pred)]:.2%})"
         ))
 
+        # Vẽ biểu đồ xác suất
+        plot_probabilities(GENDER_CLASSES, gender_pred[0], "Giới tính", gender_chart_frame)
+        plot_probabilities(AGE_CLASSES, age_pred[0], "Nhóm tuổi", age_chart_frame)
+
     except Exception as e:
         messagebox.showerror("Error", str(e))
 
 # ---- Giao diện Tkinter ----
 root = tk.Tk()
-root.title("Dự đoán giới tính và nhóm tuổi của bạn")
-root.geometry("350x400")
+root.title("Dự đoán giới tính và nhóm tuổi")
+root.geometry("1000x750")
 root.resizable(False, False)
+root.configure(bg="white")
 
 # Nút chọn ảnh
-btn = tk.Button(root, text="Tải lên hình ảnh", command=choose_image, font=('Arial', 12), bg='#0052cc', fg='white')
+btn = tk.Button(root, text="Tải lên hình ảnh", command=choose_image, font=('Arial', 12), bg="blue", fg="white")
 btn.pack(pady=15)
 
 # Khung hiển thị ảnh
@@ -78,5 +84,17 @@ image_label.pack()
 # Kết quả dự đoán
 result_label = tk.Label(root, text="", font=('Arial', 14), fg="blue")
 result_label.pack(pady=10)
+
+# Frame chứa 2 biểu đồ
+chart_container_frame = tk.Frame(root, bg="white")
+chart_container_frame.pack(pady=0)
+
+# Biểu đồ giới tính (bên trái)
+gender_chart_frame = tk.Frame(chart_container_frame, bg="white")
+gender_chart_frame.pack(side="left", padx=0)
+
+# Biểu đồ nhóm tuổi (bên phải)
+age_chart_frame = tk.Frame(chart_container_frame, bg="white")
+age_chart_frame.pack(side="left", padx=0)
 
 root.mainloop()
