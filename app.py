@@ -378,8 +378,7 @@ with tab_eda:
         fig_eda_age = go.Figure(go.Pie(
             labels=AGE_CLASSES,
             values=age_counts,
-            hole=0.4,
-            marker=dict(colorscale='Portland')
+            hole=0.4
         ))
         fig_eda_age.update_layout(
             title="Tỷ lệ phân bố các Nhóm tuổi trong Adience Dataset",
